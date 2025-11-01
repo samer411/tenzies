@@ -14,18 +14,15 @@ export default function App() {
     }
     return arr;
   }
-  function selectDie(id) {
-    setDieValue((prevDieValue) =>
-      prevDieValue.map((die) => {
-        return die.id === id ? { ...die, isHeld: !die.isHeld } : die;
-      })
-    );
+
+  function hold(id) {
+    console.log(id);
   }
   const [dieValue, setDieValue] = useState(generateAllNewDice());
 
   return (
-    <body className="flex justify-center bg-[#0B2434]">
-      <main className="m-10 flex h-150 w-150 flex-col items-center space-y-3 rounded-md bg-[#F5F5F5] p-10">
+    <main className="flex justify-center bg-[#0B2434]">
+      <div className="m-10 flex h-150 w-150 flex-col items-center space-y-3 rounded-md bg-[#F5F5F5] p-10">
         <h1 className="text-5xl">Tenzies</h1>
         <p className="text-2xl text-[#4A4E74]">
           Roll until all dice are the same. Click each die to freeze it at its
@@ -33,14 +30,7 @@ export default function App() {
         </p>
         <div className="grid grid-cols-5">
           {dieValue.map((ob) => (
-            <Die
-              key={ob.id}
-              value={ob.value}
-              isHeld={ob.isHeld}
-              onClick={() => {
-                selectDie(ob.id);
-              }}
-            />
+            <Die key={ob.id} value={ob.value} id={ob.id} hold={hold} />
           ))}
         </div>
         <button
@@ -49,7 +39,7 @@ export default function App() {
         >
           Roll
         </button>
-      </main>
-    </body>
+      </div>
+    </main>
   );
 }
