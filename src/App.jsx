@@ -1,45 +1,64 @@
 import { useState } from 'react';
 import Die from './components/Die';
 import { nanoid } from 'nanoid';
+import Confetti from 'react-confetti';
 
 export default function App() {
+  const [dice, setDice] = useState(generateAllNewDice());
+
+  const gameWon =
+    dice.every((die) => die.isHeld) &&
+    dice.every((die) => die.value === dice[0].value);
+
   function generateAllNewDice() {
-    let arr = [];
-    for (let i = 0; i < 10; i++) {
-      arr.push({
-        value: Math.ceil(Math.random() * 6),
-        isHeld: false,
-        id: nanoid(),
-      });
+    return new Array(10).fill(0).map(() => ({
+      value: Math.ceil(Math.random() * 6),
+      isHeld: false,
+      id: nanoid(),
+    }));
+  }
+
+  function rollDice() {
+    if (gameWon) {
+      window.location.reload();
+    } else {
+      setDice((oldDice) =>
+        oldDice.map((die) =>
+          die.isHeld ? die : { ...die, value: Math.ceil(Math.random() * 6) }
+        )
+      );
     }
-    return arr;
   }
 
   function hold(id) {
-    console.log(id);
+    setDice((oldDice) =>
+      oldDice.map((die) =>
+        die.id === id ? { ...die, isHeld: !die.isHeld } : die
+      )
+    );
   }
-  const [dieValue, setDieValue] = useState(generateAllNewDice());
+
+  const diceElements = dice.map((dieObj) => (
+    <Die
+      key={dieObj.id}
+      value={dieObj.value}
+      isHeld={dieObj.isHeld}
+      hold={() => hold(dieObj.id)}
+    />
+  ));
 
   return (
-    <main className="flex justify-center bg-[#0B2434]">
-      <div className="m-10 flex h-150 w-150 flex-col items-center space-y-3 rounded-md bg-[#F5F5F5] p-10">
-        <h1 className="text-5xl">Tenzies</h1>
-        <p className="text-2xl text-[#4A4E74]">
-          Roll until all dice are the same. Click each die to freeze it at its
-          current value between rolls.
-        </p>
-        <div className="grid grid-cols-5">
-          {dieValue.map((ob) => (
-            <Die key={ob.id} value={ob.value} id={ob.id} hold={hold} />
-          ))}
-        </div>
-        <button
-          className="rounded-md bg-[#5035FF] px-12 py-3 text-2xl font-bold text-white hover:cursor-pointer"
-          onClick={() => setDieValue(generateAllNewDice())}
-        >
-          Roll
-        </button>
-      </div>
+    <main>
+      {gameWon && <Confetti />}
+      <h1 className="title">Tenzies</h1>
+      <p className="instructions">
+        Roll until all dice are the same. Click each die to freeze it at its
+        current value between rolls.
+      </p>
+      <div className="dice-container">{diceElements}</div>
+      <button className="roll-dice" onClick={rollDice}>
+        {gameWon ? 'New Game' : 'Roll'}
+      </button>
     </main>
   );
 }
