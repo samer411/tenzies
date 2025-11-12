@@ -50,6 +50,11 @@ export default function App() {
   return (
     <main>
       {gameWon && <Confetti />}
+      <div aria-live="polite" className="sr-only">
+        {gameWon && (
+          <h2 className="congratulations">Congratulations! You won!</h2>
+        )}
+      </div>
       <h1 className="title">Tenzies</h1>
       <p className="instructions">
         Roll until all dice are the same. Click each die to freeze it at its
